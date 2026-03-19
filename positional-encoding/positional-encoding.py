@@ -1,21 +1,12 @@
 import numpy as np
 
 def positional_encoding(seq_len, d_model, base=10000.0):
-    """
-    Return PE of shape (seq_len, d_model) using sin/cos formulation.
-    Odd d_model -> last column is sin.
-    """
-    # Write code here
-    pos = np.arange(seq_len)[:, None]                 # (seq_len, 1)
-    even_idx = np.arange(0, d_model, 2)               # 0,2,4,...
-    denom = base ** (even_idx / d_model)              # base^(2i/d_model) where 2i = even_idx
-    angles = pos / denom[None, :]                     # (seq_len, ceil(d_model/2))
+    pe = np.zeros((seq_len, d_model))
+    pos = np.arange(seq_len)[:, np.newaxis]
 
-    pe = np.zeros((seq_len, d_model), dtype=float)
-    pe[:, even_idx] = np.sin(angles)
+    div_term = np.exp(np.arange(0, d_model, 2) * (-np.log(base) / d_model))
 
-    odd_idx = even_idx + 1
-    odd_idx = odd_idx[odd_idx < d_model]
-    pe[:, odd_idx] = np.cos(angles[:, :len(odd_idx)])
+    pe[:, 0::2] = np.sin(pos * div_term)
+    pe[:, 1::2] = np.cos(pos * div_term[:pe[:, 1::2].shape[1]])
 
     return pe
