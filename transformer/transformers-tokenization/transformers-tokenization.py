@@ -29,26 +29,27 @@ class SimpleTokenizer:
             self.bos_token,
             self.eos_token
         ]
-
+        
         self.word_to_id = {}
         self.id_to_word = {}
-        
-        for i, token in enumerate(special_tokens):
-            self.word_to_id[token] = i
-            self.id_to_word[i] = token
 
-        next_id = len(special_tokens)
-        seen = set()
+        for token in special_tokens:
+            idx = len(self.word_to_id)
+            self.word_to_id[token] = idx
+            self.id_to_word[idx] = token
+
+        self.vocab_size = len(special_tokens)
+        next_idx = self.vocab_size + 1
 
         for text in texts:
             for word in text.split():
-                if word not in seen:
-                    seen.add(word)
-                    self.word_to_id[word] = next_id
-                    self.id_to_word[next_id] = word
-                    next_id += 1
+                if word not in self.word_to_id:
+                    idx = len(self.word_to_id)
+                    self.word_to_id[word] = idx
+                    self.id_to_word[idx] = word
 
-        self.vocab_size = next_id
+        self.vocab_size = len(self.word_to_id)
+          
     
     def encode(self, text: str) -> List[int]:
         """
@@ -56,8 +57,8 @@ class SimpleTokenizer:
         Use UNK for unknown words.
         """
         # YOUR CODE HERE
-        unk_id = self.word_to_id[self.unk_token]
-        return [self.word_to_id.get(word, unk_id) for word in text.split()]
+        return [self.word_to_id.get(token, self.word_to_id[self.unk_token])
+                for token in text.split()]
     
     def decode(self, ids: List[int]) -> str:
         """
