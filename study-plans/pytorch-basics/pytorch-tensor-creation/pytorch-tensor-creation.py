@@ -5,8 +5,10 @@ def create_tensor(method, shape, value=0.0):
     Returns: list
     """
     if method == "zeros":
-        return torch.zeros(shape).tolist()
+        return torch.zeros(shape)
     elif method == "ones":
-        return torch.ones(shape).tolist()
+        return torch.ones(shape)
     elif method == "full":
-        return torch.full(shape, value).tolist()
+        return torch.full(shape, value)
+    else:
+        return None
